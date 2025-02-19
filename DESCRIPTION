@@ -1,11 +1,11 @@
 Package: stacrsr
-Title: What the Package Does (One Line, Title Case)
+Title: An R wrapper for stacrs
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("Alex", "Mandel", , "alex@developmentseed.org", role = c("aut", "cre")),
+    person("Wei-Ji", "Leong", , "weiji@developmentseed.org", role = c("aut", "cre"))
+Description: R wrapper of rust package for interacting with Spatial Temporal Asset Catalog(STAC) APIs and files
+License: `use_mit_license()`
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2

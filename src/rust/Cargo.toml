@@ -9,4 +9,6 @@ name = 'stacrsr'
 
 [dependencies]
 extendr-api = '*'
-stac = "0.12.0"
+serde = "1.0.217"
+stac = { version = "0.12.0", features = ["object-store-all"] }
+tokio = "1.43.0"
