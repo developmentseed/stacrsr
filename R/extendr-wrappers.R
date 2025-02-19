@@ -14,5 +14,7 @@ NULL
 #' @export
 hello_world <- function() .Call(wrap__hello_world)
 
+read <- function(href) .Call(wrap__read, href)
+
 
 # nolint end
