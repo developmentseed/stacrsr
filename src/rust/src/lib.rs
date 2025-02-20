@@ -2,7 +2,6 @@ use extendr_api::prelude::*;
 use extendr_api::serializer::to_robj;
 use extendr_api::ToVectorValue;
 use serde;
-use stac::mime::JSON;
 use stac::{Error, Format, Value};
 use tokio;
 
@@ -20,7 +19,7 @@ pub fn read(
     href: String,
     format: Option<String>,
     options: Option<Vec<(String, String)>>,
-) -> Result<Json<Value>> {
+) -> Result<Robj> {
     //Result<Bound<'_, Any>> {
     let format = format
         .and_then(|f| f.parse::<Format>().ok())
@@ -40,7 +39,8 @@ pub fn read(
             .await
             .map_err(Error::from)
             .unwrap();
-        Ok(JSON(value))
+
+        to_robj(&Json(value))
     })
 }
 
