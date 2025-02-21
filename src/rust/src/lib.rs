@@ -6,22 +6,11 @@ use serde;
 use stac::{Format, Value};
 use tokio;
 
-/// Return string `"Hello world!"` to R.
-/// @export
-#[extendr]
-fn hello_world() -> &'static str {
-    "Hello world!"
-}
-
 #[derive(serde::Serialize)]
 struct Json<T: serde::Serialize>(T);
 
 #[extendr]
-pub fn read(
-    href: String,
-    format: Option<String>,
-    options: List,
-) -> Result<Robj> {
+pub fn read(href: String, format: Option<String>, options: List) -> Result<Robj> {
     let format = format
         .and_then(|f| f.parse::<Format>().ok())
         .or_else(|| Format::infer_from_href(&href))
@@ -29,7 +18,7 @@ pub fn read(
     let options = options
         .into_hashmap()
         .iter()
-        .map(|t| (t.0.to_string(), from_robj::<String>(&t.1).unwrap()))
+        .map(|(key, value)| (key.to_string(), from_robj::<String>(&value).unwrap()))
         .collect::<Vec<_>>();
     // Initialize async runtime
     let runtime = tokio::runtime::Builder::new_current_thread()
@@ -51,6 +40,5 @@ pub fn read(
 // See corresponding C code in `entrypoint.c`.
 extendr_module! {
     mod stacrsr;
-    fn hello_world;
     fn read;
 }
