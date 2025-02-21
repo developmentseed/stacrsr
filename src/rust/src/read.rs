@@ -5,6 +5,12 @@ use extendr_api::serializer::to_robj;
 use extendr_api::Error;
 use stac::{Format, Value};
 
+/// Reads a STAC value from a href.
+///
+/// # Examples
+/// ```
+/// read("s3://bucket-name/item.json", NULL, list(aws_region="us-west-2"))
+/// ```
 #[extendr]
 pub fn read(href: String, format: Option<String>, options: List) -> Result<Robj> {
     let format = format
