@@ -1,8 +1,9 @@
+use extendr_api::deserializer::from_robj;
 use extendr_api::prelude::*;
 use extendr_api::serializer::to_robj;
-use extendr_api::ToVectorValue;
+use extendr_api::Error;
 use serde;
-use stac::{Error, Format, Value};
+use stac::{Format, Value};
 use tokio;
 
 /// Return string `"Hello world!"` to R.
@@ -12,35 +13,36 @@ fn hello_world() -> &'static str {
     "Hello world!"
 }
 
+#[derive(serde::Serialize)]
 struct Json<T: serde::Serialize>(T);
 
 #[extendr]
 pub fn read(
     href: String,
     format: Option<String>,
-    options: Option<Vec<(String, String)>>,
+    options: List,
 ) -> Result<Robj> {
-    //Result<Bound<'_, Any>> {
     let format = format
         .and_then(|f| f.parse::<Format>().ok())
         .or_else(|| Format::infer_from_href(&href))
         .unwrap_or_default();
-    let options = options.unwrap_or_default();
-
+    let options = options
+        .into_hashmap()
+        .iter()
+        .map(|t| (t.0.to_string(), from_robj::<String>(&t.1).unwrap()))
+        .collect::<Vec<_>>();
     // Initialize async runtime
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()
-        .unwrap();
+        .map_err(|e| Error::Other(e.to_string()))?;
 
     runtime.block_on(async {
-        let value = format
+        format
             .get_opts::<Value, _, _, _>(href, options)
             .await
-            .map_err(Error::from)
-            .unwrap();
-
-        to_robj(&Json(value))
+            .map_err(|e| Error::Other(e.to_string()))
+            .and_then(|value| to_robj(&Json(value)))
     })
 }
 
